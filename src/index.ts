@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express';
-const { MongoClient, ServerApiVersion } = require('mongodb');
-require('dotenv').config()
-
+import { MongoClient, ServerApiVersion } from 'mongodb';
+require('dotenv').config();
 
 const app = express();
 
@@ -10,8 +9,8 @@ const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
 
 app.use(express.json());
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(process.env.NEXT_PUBLIC_MONGODB_URL, {
+// MongoDB client initialization
+const client = new MongoClient(process.env.NEXT_PUBLIC_MONGODB_URL as string, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
@@ -19,57 +18,87 @@ const client = new MongoClient(process.env.NEXT_PUBLIC_MONGODB_URL, {
   }
 });
 
+// Define types for collections
+interface User {
+  _id : string;
+  name : string;
+  email : string;
+  phone : string;
+  roll : string;
+  department : string;
+  batch : number;
+  position : string;
+  profilePictureUrl : string;
+  hashedPassword : string;
+}
+
+interface Book {
+  _id : string;
+  title : string;
+  author : string;
+  publisher : string;
+  isbn : string;
+  edition : string;
+  category : string;
+  language : string;
+  totalCopies : number;
+  availableCopies : number;
+  publicationYear : number;
+  bookCoverUrl : string;
+  description : string;
+}
+
+
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
+    // Connect the client to the server
     await client.connect();
-    // Send a ping to confirm a successful connection
-    // await client.db("admin").command({ ping: 1 });
+    console.log("MongoDB connected successfully!");
 
     const database = client.db("library-project");
-    const usersCollection =  database.collection("users");
-    const booksCollection = database.collection("BookList");
+    const usersCollection = database.collection<User>("users");
+    const booksCollection = database.collection<Book>("BookList");
 
-    app.get('/users', async (req: Request, res : Response) => {
-      const users = await usersCollection.find().toArray();
-      res.json(users);
-    })
+    app.get('/users', async (req: Request, res: Response) => {
+      try {
+        const users = await usersCollection.find().toArray();
+        res.json(users);
+      } catch (err) {
+        res.status(500).send("Error fetching users");
+      }
+    });
 
     app.get('/book', async (req: Request, res: Response) => {
-      const book = await booksCollection.find().toArray();
-      res.json(book);
-    })
+      try {
+        const books = await booksCollection.find().toArray();
+        res.json(books);
+      } catch (err) {
+        res.status(500).send("Error fetching books");
+      }
+    });
 
     app.post('/book', async (req: Request, res: Response) => {
       const book = req.body;
-      const result = await booksCollection.insertOne(book);
-      res.json(result);
-    })
+      try {
+        const result = await booksCollection.insertOne(book);
+        res.json(result);
+      } catch (err) {
+        res.status(500).send("Error inserting book");
+      }
+    });
 
-
-
-
-
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
   }
 }
+
+// Run the server
 run().catch(console.dir);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, TypeScript with Express!');
 });
 
-
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
-
-
-
-
-const uri = "mongodb+srv://<db_username>:<db_password>@cluster0.ythezyh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
-
