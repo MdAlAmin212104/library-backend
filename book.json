@@ -1,0 +1,73 @@
+[
+    {
+      "title": "The Alchemist",
+      "author": "Paulo Coelho",
+      "publisher": "HarperCollins",
+      "isbn": "9780061122415",
+      "edition": "25th Anniversary",
+      "category": "Fiction",
+      "language": "English",
+      "totalCopies": 20,
+      "availableCopies": 15,
+      "publicationYear": 1988,
+      "bookCoverUrl": "https://bhumika.com.bd/public/uploads/all/REfjr28SxYCepSddPLKYRWyvYJ8W3rEMEtubbwG1.jpg",
+      "description": "A journey of self-discovery and chasing one's dreams."
+    },
+    {
+      "title": "Sapiens: A Brief History of Humankind",
+      "author": "Yuval Noah Harari",
+      "publisher": "Harper",
+      "isbn": "9780062316097",
+      "edition": "1st",
+      "category": "Non-Fiction",
+      "language": "English",
+      "totalCopies": 30,
+      "availableCopies": 25,
+      "publicationYear": 2011,
+      "bookCoverUrl": "https://m.media-amazon.com/images/I/712Uo++xK2L._SY466_.jpg",
+      "description": "An exploration of the history and impact of humankind."
+    },
+    {
+      "title": "To Kill a Mockingbird",
+      "author": "Harper Lee",
+      "publisher": "J.B. Lippincott & Co.",
+      "isbn": "9780446310789",
+      "edition": "50th Anniversary",
+      "category": "Classic Literature",
+      "language": "English",
+      "totalCopies": 25,
+      "availableCopies": 10,
+      "publicationYear": 1960,
+      "bookCoverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/To_Kill_a_Mockingbird_%28first_edition_cover%29.jpg/220px-To_Kill_a_Mockingbird_%28first_edition_cover%29.jpg",
+      "description": "A story of racial injustice and childhood innocence in the American South."
+    },
+    {
+      "title": "The Art of Computer Programming",
+      "author": "Donald Knuth",
+      "publisher": "Addison-Wesley",
+      "isbn": "9780201896831",
+      "edition": "3rd",
+      "category": "Computer Science",
+      "language": "English",
+      "totalCopies": 10,
+      "availableCopies": 8,
+      "publicationYear": 1997,
+      "bookCoverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/ArtOfComputerProgramming.svg/220px-ArtOfComputerProgramming.svg.png",
+      "description": "A comprehensive series on the foundations of computer programming."
+    },
+    {
+      "title": "The Catcher in the Rye",
+      "author": "J.D. Salinger",
+      "publisher": "Little, Brown and Company",
+      "isbn": "9780316769488",
+      "edition": "Reissue",
+      "category": "Fiction",
+      "language": "English",
+      "totalCopies": 15,
+      "availableCopies": 12,
+      "publicationYear": 1951,
+      "bookCoverUrl": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1398034300i/5107.jpg",
+      "description": "A story of teenage rebellion and disillusionment in post-war America."
+    }
+  ]
+  

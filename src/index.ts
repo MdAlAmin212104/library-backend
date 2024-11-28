@@ -28,10 +28,22 @@ async function run() {
 
     const database = client.db("library-project");
     const usersCollection =  database.collection("users");
+    const booksCollection = database.collection("BookList");
 
     app.get('/users', async (req: Request, res : Response) => {
       const users = await usersCollection.find().toArray();
       res.json(users);
+    })
+
+    app.get('/book', async (req: Request, res: Response) => {
+      const book = await booksCollection.find().toArray();
+      res.json(book);
+    })
+
+    app.post('/book', async (req: Request, res: Response) => {
+      const book = req.body;
+      const result = await booksCollection.insertOne(book);
+      res.json(result);
     })
 
 
