@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { MongoClient, ServerApiVersion } from 'mongodb';
+import { MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
 require('dotenv').config();
 
 const app = express();
@@ -67,6 +67,34 @@ async function run() {
         res.status(500).send("Error fetching users");
       }
     });
+
+    
+    app.patch('/user/:id', async (req: Request, res: Response): Promise<Response> => {
+      const userId = req.params.id;
+      const updatedUser = req.body.updatedUser;
+    
+      if (!ObjectId.isValid(userId)) {
+        return res.status(400).send("Invalid user ID");
+      }
+    
+      try {
+        const result = await usersCollection.updateOne(
+          { _id: new ObjectId(userId) },
+          { $set: updatedUser }
+        );
+    
+        if (result.modifiedCount === 0) {
+          return res.status(404).send("User not found or no changes made");
+        }
+    
+        return res.json({ message: "User updated successfully", result });
+      } catch (err) {
+        console.error("Error updating user:", err);
+        return res.status(500).send("Error updating user");
+      }
+    });
+    
+
 
     app.get('/book', async (req: Request, res: Response) => {
       try {
