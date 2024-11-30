@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
+import { Collection, MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
 require('dotenv').config();
 
 const app = express();
@@ -20,7 +20,7 @@ const client = new MongoClient(process.env.NEXT_PUBLIC_MONGODB_URL as string, {
 
 // Define types for collections
 interface User {
-  _id : string;
+  _id : ObjectId;
   name : string;
   email : string;
   phone : string;
@@ -33,7 +33,6 @@ interface User {
 }
 
 interface Book {
-  _id : string;
   title : string;
   author : string;
   publisher : string;
@@ -69,28 +68,30 @@ async function run() {
     });
 
     
-    app.patch('/user/:id', async (req: Request, res: Response): Promise<Response> => {
+    app.patch('/user/:id', async (req: Request, res: Response): Promise<void> => {
       const userId = req.params.id;
-      const updatedUser = req.body.updatedUser;
-    
+      // Validate userId
       if (!ObjectId.isValid(userId)) {
-        return res.status(400).send("Invalid user ID");
+        res.status(400).send("Invalid user ID");
+        return;
       }
-    
+      const updatedUser = req.body;
       try {
+        // Simulate a database update operation
         const result = await usersCollection.updateOne(
           { _id: new ObjectId(userId) },
           { $set: updatedUser }
         );
     
         if (result.modifiedCount === 0) {
-          return res.status(404).send("User not found or no changes made");
+          res.status(404).send("User not found or no changes made");
+          return;
         }
     
-        return res.json({ message: "User updated successfully", result });
-      } catch (err) {
-        console.error("Error updating user:", err);
-        return res.status(500).send("Error updating user");
+        res.status(200).json({ message: "User updated successfully", result });
+      } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).send("Internal server error");
       }
     });
     
@@ -114,6 +115,8 @@ async function run() {
         res.status(500).send("Error inserting book");
       }
     });
+
+    
 
   } catch (error) {
     console.error("MongoDB connection error:", error);
