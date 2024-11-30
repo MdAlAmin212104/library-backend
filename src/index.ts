@@ -164,6 +164,28 @@ async function run() {
         res.status(500).send("Internal server error");
       }
     });
+
+    app.delete('/book/:id', async(req: Request, res: Response) => {
+      const bookId = req.params.id;
+      // Validate bookId
+      if (!ObjectId.isValid(bookId)) {
+        res.status(400).send("Invalid book ID");
+        return;
+      }
+      try {
+        // Simulate a database deletion operation
+        const result = await usersCollection.deleteOne({ _id: new ObjectId(bookId) });
+        if (result.deletedCount === 0) {
+          res.status(404).send("book not found");
+          return;
+        }
+        res.status(200).json({ message: "book deleted successfully" });
+        return;
+      } catch (error: any) {
+        console.error("Error deleting book:", error);
+        res.status(500).send("Internal server error");
+      }  
+    })
     
 
   } catch (error) {
