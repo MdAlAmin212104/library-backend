@@ -94,6 +94,28 @@ async function run() {
         res.status(500).send("Internal server error");
       }
     });
+
+    app.delete('/user/:id', async(req: Request, res: Response) => {
+      const userId = req.params.id;
+      // Validate userId
+      if (!ObjectId.isValid(userId)) {
+        res.status(400).send("Invalid user ID");
+        return;
+      }
+      try {
+        // Simulate a database deletion operation
+        const result = await usersCollection.deleteOne({ _id: new ObjectId(userId) });
+        if (result.deletedCount === 0) {
+          res.status(404).send("User not found");
+          return;
+        }
+        res.status(200).json({ message: "User deleted successfully" });
+        return;
+      } catch (error: any) {
+        console.error("Error deleting user:", error);
+        res.status(500).send("Internal server error");
+      }  
+    })
     
 
 
