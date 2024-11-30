@@ -116,6 +116,32 @@ async function run() {
       }
     });
 
+    app.patch('/book/:id', async (req: Request, res: Response): Promise<void> => {
+      const bookId = req.params.id;
+      // Validate bookId
+      if (!ObjectId.isValid(bookId)) {
+        res.status(400).send("Invalid book ID");
+        return;
+      }
+      const updateBookList = req.body;
+      try {
+        // Simulate a database update operation
+        const result = await booksCollection.updateOne(
+          { _id: new ObjectId(bookId) },
+          { $set: updateBookList }
+        );
+    
+        if (result.modifiedCount === 0) {
+          res.status(404).send("Book not found or no changes made");
+          return;
+        }
+    
+        res.status(200).json({ message: "book updated successfully", result });
+      } catch (error) {
+        console.error("Error updating book:", error);
+        res.status(500).send("Internal server error");
+      }
+    });
     
 
   } catch (error) {
