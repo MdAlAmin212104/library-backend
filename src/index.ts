@@ -154,14 +154,6 @@ async function run() {
       }
     });
 
-    // app.get('/book', async (req: Request, res: Response) => {
-    //   try {
-    //     const books = await booksCollection.find().toArray();
-    //     res.json(books);
-    //   } catch (err) {
-    //     res.status(500).send("Error fetching books");
-    //   }
-    // });
 
     app.post('/book', async (req: Request, res: Response) => {
       const book = req.body;
