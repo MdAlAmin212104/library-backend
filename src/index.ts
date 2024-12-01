@@ -1,9 +1,18 @@
 import express, { Request, Response } from 'express';
 import { Collection, MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
+import cors from 'cors';
 require('dotenv').config();
+
 
 const app = express();
 
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+  ],
+  credentials: true,
+}));
+app.use(express.json());
 // Use a default value with process.env.PORT
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
 
@@ -119,14 +128,40 @@ async function run() {
     
 
 
-    app.get('/book', async (req: Request, res: Response) => {
+    app.get("/books", async (req: Request, res: Response) => {
       try {
-        const books = await booksCollection.find().toArray();
-        res.json(books);
-      } catch (err) {
-        res.status(500).send("Error fetching books");
+        // Parse query parameters for pagination
+        const page = parseInt(req.query.page as string) || 1; // Default to page 1
+        const limit = parseInt(req.query.limit as string) || 10; // Default to 10 items per page
+        const skip = (page - 1) * limit;
+    
+        // Fetch paginated books
+        const books = await booksCollection.find().skip(skip).limit(limit).toArray();
+    
+        // Fetch the total count of books
+        const totalBooks = await booksCollection.countDocuments();
+    
+        // Send paginated response
+        res.json({
+          books,
+          totalBooks,
+          totalPages: Math.ceil(totalBooks / limit),
+          currentPage: page,
+        });
+      } catch (error) {
+        console.error("Error fetching books:", error);
+        res.status(500).json({ message: "Error fetching books" });
       }
     });
+
+    // app.get('/book', async (req: Request, res: Response) => {
+    //   try {
+    //     const books = await booksCollection.find().toArray();
+    //     res.json(books);
+    //   } catch (err) {
+    //     res.status(500).send("Error fetching books");
+    //   }
+    // });
 
     app.post('/book', async (req: Request, res: Response) => {
       const book = req.body;
