@@ -154,6 +154,27 @@ async function run() {
       }
     });
 
+    app.get('/book/:bookId', async (req : Request, res : Response) => {
+      const bookId = req.params.bookId;
+      // Validate bookId
+      if (!ObjectId.isValid(bookId)) {
+        res.status(400).send("Invalid book ID");
+        return;
+      }
+      try {
+        const book = await booksCollection.findOne({ _id: new ObjectId(bookId) });
+        if (!book) {
+          res.status(404).send("Book not found");
+          return;
+        }
+        res.json(book);
+      } catch (error) {
+        console.error("Error fetching book:", error);
+        res.status(500).send("Internal server error");
+      }
+    }
+  )
+
 
     app.post('/book', async (req: Request, res: Response) => {
       const book = req.body;
@@ -166,29 +187,40 @@ async function run() {
     });
 
     app.patch('/book/:id', async (req: Request, res: Response): Promise<void> => {
+      const updateBookList = req.body;
+    
       const bookId = req.params.id;
+    
       // Validate bookId
       if (!ObjectId.isValid(bookId)) {
         res.status(400).send("Invalid book ID");
         return;
       }
-      const updateBookList = req.body;
+    
+      // Remove the _id field from the update payload if it exists
+      const { _id, ...updateData } = updateBookList;
+    
       try {
         // Simulate a database update operation
         const result = await booksCollection.updateOne(
           { _id: new ObjectId(bookId) },
-          { $set: updateBookList }
+          { $set: updateData }
         );
     
-        if (result.modifiedCount === 0) {
-          res.status(404).send("Book not found or no changes made");
+        if (result.matchedCount === 0) {
+          res.status(404).send("Book not found");
           return;
         }
     
-        res.status(200).json({ message: "book updated successfully", result });
+        if (result.modifiedCount === 0) {
+          res.status(200).send("No changes made to the book");
+          return;
+        }
+    
+        res.status(200).json({ message: "Book updated successfully", result });
       } catch (error) {
         console.error("Error updating book:", error);
-        res.status(500).send("Internal server error");
+        res.status(500).send({ message: "Internal server error" });
       }
     });
 
@@ -201,7 +233,7 @@ async function run() {
       }
       try {
         // Simulate a database deletion operation
-        const result = await usersCollection.deleteOne({ _id: new ObjectId(bookId) });
+        const result = await booksCollection.deleteOne({ _id: new ObjectId(bookId) });
         if (result.deletedCount === 0) {
           res.status(404).send("book not found");
           return;
