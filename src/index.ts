@@ -99,28 +99,42 @@ async function run() {
     
     app.patch('/user/:id', async (req: Request, res: Response): Promise<void> => {
       const userId = req.params.id;
-      // Validate userId
+      const updateData = req.body;
+    
+      // Validate ID
       if (!ObjectId.isValid(userId)) {
         res.status(400).send("Invalid user ID");
         return;
       }
-      const updatedUser = req.body;
+    
+      // Validate payload
+      if (!updateData || Object.keys(updateData).length === 0) {
+        res.status(400).send("No update data provided");
+        return;
+      }
+    
       try {
-        // Simulate a database update operation
+        // Remove _id field from update payload
+        const { _id, ...filteredUpdateData } = updateData;
+    
         const result = await usersCollection.updateOne(
           { _id: new ObjectId(userId) },
-          { $set: updatedUser }
+          { $set: filteredUpdateData }
         );
+        if (result.matchedCount === 0) {
+          res.status(404).send("User not found");
+          return;
+        }
     
         if (result.modifiedCount === 0) {
-          res.status(404).send("User not found or no changes made");
+          res.status(200).send("No changes made to the user");
           return;
         }
     
         res.status(200).json({ message: "User updated successfully", result });
       } catch (error) {
         console.error("Error updating user:", error);
-        res.status(500).send("Internal server error");
+        res.status(500).send({ message: "Internal server error" });
       }
     });
 
@@ -205,6 +219,7 @@ async function run() {
         res.status(500).send("Error inserting book");
       }
     });
+    
 
     app.patch('/book/:id', async (req: Request, res: Response): Promise<void> => {
       const updateBookList = req.body;
