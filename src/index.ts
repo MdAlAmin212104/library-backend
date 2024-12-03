@@ -76,6 +76,26 @@ async function run() {
       }
     });
 
+    app.get('/user/:id', async (req: Request, res: Response) => {
+      const userId = req.params.id;
+      // Validate userId
+      if (!ObjectId.isValid(userId)) {
+        res.status(400).send("Invalid user ID");
+        return;
+      }
+      try {
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        if (!user) {
+          res.status(404).send("User not found");
+          return;
+        }
+        res.json(user);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        res.status(500).send("Internal server error");
+      }
+    })
+
     
     app.patch('/user/:id', async (req: Request, res: Response): Promise<void> => {
       const userId = req.params.id;
@@ -106,19 +126,19 @@ async function run() {
 
     app.delete('/user/:id', async(req: Request, res: Response) => {
       const userId = req.params.id;
-      // Validate userId
+      // Validate bookId
       if (!ObjectId.isValid(userId)) {
-        res.status(400).send("Invalid user ID");
+        res.status(400).send("Invalid book ID");
         return;
       }
       try {
         // Simulate a database deletion operation
         const result = await usersCollection.deleteOne({ _id: new ObjectId(userId) });
         if (result.deletedCount === 0) {
-          res.status(404).send("User not found");
+          res.status(404).send("user not found");
           return;
         }
-        res.status(200).json({ message: "User deleted successfully" });
+        res.status(200).json({ message: "user deleted successfully" });
         return;
       } catch (error: any) {
         console.error("Error deleting user:", error);
