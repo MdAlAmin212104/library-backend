@@ -56,6 +56,17 @@ interface Book {
   description : string;
 }
 
+interface Book_Browsing {
+  userRoll: string;
+  bookId: string;
+  startDate : string;
+  endDate : string;
+  totalDays: number;
+  status: string;
+}
+
+
+
 
 async function run() {
   try {
@@ -66,6 +77,7 @@ async function run() {
     const database = client.db("library-project");
     const usersCollection = database.collection<User>("users");
     const booksCollection = database.collection<Book>("BookList");
+    const bookBrowsingCollection = database.collection<Book_Browsing>("BookBrowsing");
 
     app.get('/users', async (req: Request, res: Response) => {
       try {
@@ -279,7 +291,18 @@ async function run() {
         console.error("Error deleting book:", error);
         res.status(500).send("Internal server error");
       }  
-    })
+    });
+
+
+    app.post('/bookBrowsing', async(req: Request, res: Response) => {
+      const bookInformation = req.body;
+      try {
+        const result = await bookBrowsingCollection.insertOne(bookInformation);
+        res.json(result);
+      } catch (err) {
+        res.status(500).send("Error inserting book");
+      }
+    });
     
 
   } catch (error) {
