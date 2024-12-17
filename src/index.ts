@@ -294,6 +294,18 @@ async function run() {
     });
 
 
+    app.get('/bookBrowsing', async(req: Request, res: Response) => {
+      try {
+        // Fetch all book browsing information
+        const bookBrowsing = await bookBrowsingCollection.find().toArray();
+        res.json(bookBrowsing);
+      } catch (error) {
+        console.error("Error fetching book browsing information:", error);
+        res.status(500).json({ message: "Error fetching book browsing information" });
+      }
+    })
+
+
     app.post('/bookBrowsing', async(req: Request, res: Response) => {
       const bookInformation = req.body;
       try {
