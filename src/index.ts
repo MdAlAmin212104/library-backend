@@ -292,11 +292,8 @@ async function run() {
         res.status(500).send("Internal server error");
       }  
     });
-
-
     app.get('/bookBrowsing', async(req: Request, res: Response) => {
       try {
-        // Fetch all book browsing information
         const bookBrowsing = await bookBrowsingCollection.find().toArray();
         res.json(bookBrowsing);
       } catch (error) {
@@ -308,6 +305,7 @@ async function run() {
 
     app.post('/bookBrowsing', async(req: Request, res: Response) => {
       const bookInformation = req.body;
+      console.log(bookInformation);
       try {
         const result = await bookBrowsingCollection.insertOne(bookInformation);
         res.json(result);
