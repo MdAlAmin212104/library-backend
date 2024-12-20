@@ -292,13 +292,31 @@ async function run() {
         res.status(500).send("Internal server error");
       }  
     });
+
+
     app.get('/bookBrowsing', async(req: Request, res: Response) => {
       try {
-        const bookBrowsing = await bookBrowsingCollection.find().toArray();
-        res.json(bookBrowsing);
+        // Parse query parameters for pagination
+        const page = parseInt(req.query.page as string) || 1; // Default to page 1
+        const limit = parseInt(req.query.limit as string) || 10; // Default to 10 items per page
+        const skip = (page - 1) * limit;
+    
+        // Fetch paginated books
+        const browsingBook = await bookBrowsingCollection.find().skip(skip).limit(limit).toArray();
+    
+        // Fetch the total count of books
+        const totalBrowsingBook = await bookBrowsingCollection.countDocuments();
+    
+        // Send paginated response
+        res.json({
+          browsingBook,
+          totalBrowsingBook,
+          totalPages: Math.ceil(totalBrowsingBook / limit),
+          currentPage: page,
+        });
       } catch (error) {
-        console.error("Error fetching book browsing information:", error);
-        res.status(500).json({ message: "Error fetching book browsing information" });
+        console.error("Error fetching books:", error);
+        res.status(500).json({ message: "Error fetching books" });
       }
     })
 
